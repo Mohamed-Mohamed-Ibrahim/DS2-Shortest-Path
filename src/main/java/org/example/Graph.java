@@ -24,13 +24,15 @@ public class Graph {
         return edges;
     }
 
-    public int getWeight(int source, int target) {
-        for (int[] edge : edges) {
-            if (edge[0] == source && edge[1] == target) {
-                return edge[2];
-            }
-        }
-        return -1;
+    public void dijkstra(int source, int[] costs, int[] parents) {
+    }
+
+    public boolean bellmanFord(int source, int[] costs, int[] parents) {
+        return true;
+    }
+
+    public boolean floydWarshall(int[][] costsMatrix, int[][] predecessorsMatrix) {
+        return true;
     }
 
     public static void main(String[] args) {
