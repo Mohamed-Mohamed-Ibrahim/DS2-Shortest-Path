@@ -25,9 +25,70 @@ public class Graph {
     }
 
     public void dijkstra(int source, int[] costs, int[] parents) {
+        Arrays.fill(costs, Integer.MAX_VALUE);
+        Arrays.fill(parents, -1);
+        costs[source] = 0;
+
+        boolean[] visited = new boolean[V];
+
+        for (int i = 0; i < V - 1; i++) {
+            int minCost = Integer.MAX_VALUE;
+            int minNode = -1;
+
+            for (int[] edge : edges) {
+                int u = edge[0];
+                int v = edge[1];
+                int weight = edge[2];
+
+                if (!visited[u] && costs[u] < minCost) {
+                    minCost = costs[u];
+                    minNode = u;
+                }
+            }
+
+            visited[minNode] = true;
+
+            for (int[] edge : edges) {
+                int u = edge[0];
+                int v = edge[1];
+                int weight = edge[2];
+
+                if (!visited[v] && u == minNode && costs[u] + weight < costs[v]) {
+                    costs[v] = costs[u] + weight;
+                    parents[v] = u;
+                }
+            }
+        }
     }
 
     public boolean bellmanFord(int source, int[] costs, int[] parents) {
+        Arrays.fill(costs, Integer.MAX_VALUE);
+        Arrays.fill(parents, -1);
+        costs[source] = 0;
+
+        for (int i = 0; i < V - 1; i++) {
+            for (int[] edge : edges) {
+                int u = edge[0];
+                int v = edge[1];
+                int weight = edge[2];
+
+                if (costs[u] != Integer.MAX_VALUE && costs[u] + weight < costs[v]) {
+                    costs[v] = costs[u] + weight;
+                    parents[v] = u;
+                }
+            }
+        }
+
+        for (int[] edge : edges) {
+            int u = edge[0];
+            int v = edge[1];
+            int weight = edge[2];
+
+            if (costs[u] != Integer.MAX_VALUE && costs[u] + weight < costs[v]) {
+                return false; // Negative cycle found
+            }
+        }
+
         return true;
     }
 
