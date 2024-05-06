@@ -1,18 +1,36 @@
 package org.example;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Scanner;
 
 public class Graph {
     private ArrayList<int[]> edges;
     int V, E;
 
-    public Graph() {
+    public Graph(String graphFile) {
         edges = new ArrayList<>();
+        try {
+            Scanner scanner = new Scanner(new File(graphFile));
+            V = scanner.nextInt();
+            E = scanner.nextInt();
+            for (int i = 0; i < E; i++) {
+                int[] edge = new int[3];
+                edge[0] = scanner.nextInt(); // source
+                edge[1] = scanner.nextInt(); // destination
+                edge[2] = scanner.nextInt(); // weight
+                edges.add(edge);
+            }
+            scanner.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
-    public Graph(int V, int E) {
-        edges = new ArrayList<>();
-        this.V = V;
-        this.E = E;
+
+    public int size() {
+        return V;
     }
 
     public void addEdge(int source, int target, int weight) {
@@ -96,18 +114,5 @@ public class Graph {
         return true;
     }
 
-    public static void main(String[] args) {
-        Graph graph = new Graph();
-        graph.addEdge(0, 1, 5);
-        graph.addEdge(1, 2, 3);
-        graph.addEdge(2, 0, 2);
 
-        ArrayList<int[]> allEdges = graph.getEdges();
-        for (int[] edge : allEdges) {
-            System.out.println("Source: " + edge[0] + ", Target: " + edge[1] + ", Weight: " + edge[2]);
-        }
-
-        int weight = graph.getWeight(1, 2);
-        System.out.println("Weight between nodes 1 and 2: " + weight);
-    }
 }
