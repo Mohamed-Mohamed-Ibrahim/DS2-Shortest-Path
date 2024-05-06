@@ -103,7 +103,27 @@ public class CLI {
 
         switch (algorithmChoice) {
             case 1:
-                System.out.println("Dijkstra's algorithm not applicable for all pairs.");
+                int[][] costs = new int[graph.size()][graph.size()];
+                int[][] parents = new int[graph.size()][graph.size()];
+
+                for (int source = 0; source < graph.size(); source++) {
+                    graph.dijkstra(source, costs[source], parents[source]);
+                }
+                System.out.print("\nEnter source node: ");
+                int source = scanner.nextInt();
+                System.out.print("Enter target node: ");
+                int target = scanner.nextInt();
+
+                if (source < 0 || source >= graph.size() || target < 0 || target >= graph.size()) {
+                    System.out.println("Invalid source or target node!");
+                    return;
+                }
+
+                System.out.println("Cost of path from node " + source + " to node " + target + ": " + costs[source][target]);
+                System.out.println("Path from node " + source + " to node " + target + ": " + getPath(source, target, dijkstraParents));
+                System.out.println("\n0. Return to main menu");
+                System.out.print("Enter 0 to return: ");
+
                 break;
             case 2:
                 int[] bellmanFordCosts = new int[graph.size()];
@@ -174,7 +194,7 @@ public class CLI {
         StringBuilder path = new StringBuilder();
         int current = target;
         while (current != source) {
-            path.insert(0, current + " <- ");
+            path.insert(0, " -> " + current);
             current = parents[current];
             if (current == -1) {
                 return "No path exists.";
