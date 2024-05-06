@@ -36,7 +36,7 @@ public class RandomGraphGenerator {
             while (source == target) {
                 target = random.nextInt(numVertices);
             }
-            int weight = random.nextInt(maxWeight) + 1; // Ensure weight is not zero
+            int weight = random.nextInt(2 * maxWeight + 1) - maxWeight; // Generate random weight [-maxWeight, maxWeight]
             graphContent.append(source).append(" ").append(target).append(" ").append(weight).append("\n");
         }
 
@@ -53,6 +53,7 @@ public class RandomGraphGenerator {
 
         return graphFilePath;
     }
+
 
     public static void testAlgorithms(String graphFilePath) {
         // Load the graph from file
