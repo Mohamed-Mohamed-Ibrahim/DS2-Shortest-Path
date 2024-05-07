@@ -110,9 +110,40 @@ public class Graph {
         return true;
     }
 
-    public boolean floydWarshall(int[][] costsMatrix, int[][] predecessorsMatrix) {
-        return true;
-    }
+    public void floydWarshall(int[][] costsMatrix, int[][] predecessorsMatrix) {
+        int n = costsMatrix.length;
 
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (i == j) {
+                    costsMatrix[i][j] = 0;
+                } else {
+                    costsMatrix[i][j] = Integer.MAX_VALUE;
+                }
+                predecessorsMatrix[i][j] = -1;
+            }
+        }
+
+        for (int[] edge : edges) {
+            int u = edge[0];
+            int v = edge[1];
+            int weight = edge[2];
+            costsMatrix[u][v] = weight;
+        }
+
+        for (int k = 0; k < n; k++) {
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    if (costsMatrix[i][k] != Integer.MAX_VALUE &&
+                            costsMatrix[k][j] != Integer.MAX_VALUE &&
+                            costsMatrix[i][k] + costsMatrix[k][j] < costsMatrix[i][j]) {
+
+                        costsMatrix[i][j] = costsMatrix[i][k] + costsMatrix[k][j];
+                        predecessorsMatrix[i][j] = k;
+                    }
+                }
+            }
+        }
+    }
 
 }
