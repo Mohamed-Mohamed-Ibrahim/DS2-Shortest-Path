@@ -73,7 +73,7 @@ public class RandomGraphGenerator {
         graph.dijkstra(sourceDijkstra, dijkstraCosts, dijkstraParents);
         printShortestPaths(sourceDijkstra, dijkstraCosts, dijkstraParents);
 
-        // Test Bellman-Ford algorithm
+//        // Test Bellman-Ford algorithm
         System.out.println("\nTesting Bellman-Ford algorithm:");
         int sourceBellmanFord = 0; // Source node for Bellman-Ford algorithm
         int[] bellmanFordCosts = new int[graph.size()];
@@ -81,6 +81,17 @@ public class RandomGraphGenerator {
         boolean noNegativeCycle = graph.bellmanFord(sourceBellmanFord, bellmanFordCosts, bellmanFordParents);
         if (noNegativeCycle) {
             printShortestPaths(sourceBellmanFord, bellmanFordCosts, bellmanFordParents);
+        } else {
+            System.out.println("Negative cycle detected!");
+        }
+
+        // Test Floyd-Warshall algorithm
+        System.out.println("\nTesting Floyd-Warshall algorithm:");
+        int[][] floydWarshallFordCosts = new int[graph.size()][graph.size()];
+        int[][] floydWarshallPredecessors = new int[graph.size()][graph.size()];
+        boolean noNegativeCycleFloyd = graph.floydWarshall(floydWarshallFordCosts, floydWarshallPredecessors);
+        if (noNegativeCycleFloyd) {
+            printPaths(floydWarshallFordCosts, floydWarshallPredecessors);
         } else {
             System.out.println("Negative cycle detected!");
         }
@@ -108,5 +119,31 @@ public class RandomGraphGenerator {
         path.insert(0, source);
         return path.toString();
     }
+
+    public static void printPaths(int[][] costs, int[][] parents) {
+        int n = costs.length;
+
+        for(int i = 0;i < n;i++){
+            for(int j = 0;j < n;j++){
+                if(i == j)continue;
+                if(costs[i][j] == Integer.MAX_VALUE){
+                    System.out.println("From Node " + i + " To Node " + j + " There Is No Path");
+                    continue;
+                }
+                System.out.println("From Node " + i + " To Node " + j + " The Cost = " + costs[i][j]);
+                System.out.print("Path: " + i);
+                printPath(i, j, parents);
+                System.out.println(" " + j);
+            }
+        }
+    }
+    public static void printPath(int source, int target, int[][] parents) {
+        if(parents[source][target] != -1){
+            printPath(source, parents[source][target], parents);
+            System.out.print(" " + parents[source][target]);
+            printPath(parents[source][target], target, parents);
+        }
+    }
+
 }
 

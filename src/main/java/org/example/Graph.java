@@ -110,7 +110,7 @@ public class Graph {
         return true;
     }
 
-    public void floydWarshall(int[][] costsMatrix, int[][] predecessorsMatrix) {
+    public boolean floydWarshall(int[][] costsMatrix, int[][] predecessorsMatrix) {
         int n = costsMatrix.length;
 
         for (int i = 0; i < n; i++) {
@@ -128,7 +128,7 @@ public class Graph {
             int u = edge[0];
             int v = edge[1];
             int weight = edge[2];
-            costsMatrix[u][v] = weight;
+            costsMatrix[u][v] = Integer.min(costsMatrix[u][v], weight);
         }
 
         for (int k = 0; k < n; k++) {
@@ -144,6 +144,14 @@ public class Graph {
                 }
             }
         }
+
+        for (int i = 0; i < n; i++) {
+            if (costsMatrix[i][i] < 0) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
 }
