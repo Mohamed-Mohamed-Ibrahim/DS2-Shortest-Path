@@ -12,6 +12,10 @@ public class CLI {
     private static Scanner scanner = new Scanner(System.in);
     private static int[] dijkstraCosts;
     private static int[] dijkstraParents;
+    private static int[] bellmanFordCosts;
+    private static int[] bellmanFordParents;
+    private static int[][] floydWarshallCosts;
+    private static int[][] floydWarshallPredecessors;
     private static boolean shortestPathsComputed = false;
 
     public static void main(String[] args) {
@@ -59,7 +63,7 @@ public class CLI {
         int source = scanner.nextInt();
 
         if (!shortestPathsComputed) {
-            computeShortestPaths();
+            getNewStaff();
             shortestPathsComputed = true;
         }
 
@@ -71,11 +75,10 @@ public class CLI {
 
         switch (algorithmChoice) {
             case 1:
+                graph.dijkstra(source, dijkstraCosts, dijkstraParents);
                 shortestPathsOperation(source, dijkstraCosts, dijkstraParents);
                 break;
             case 2:
-                int[] bellmanFordCosts = new int[graph.size()];
-                int[] bellmanFordParents = new int[graph.size()];
                 boolean noNegativeCycle = graph.bellmanFord(source, bellmanFordCosts, bellmanFordParents);
                 if (noNegativeCycle) {
                     shortestPathsOperation(source, bellmanFordCosts, bellmanFordParents);
@@ -84,14 +87,19 @@ public class CLI {
                 }
                 break;
             case 3:
-                System.out.println("Floyd-Warshall algorithm not implemented yet.");
+                boolean success = graph.floydWarshall(floydWarshallCosts, floydWarshallPredecessors);
+                if (success) {
+                    shortestPathsOperationFloyd(source);
+                } else {
+                    System.out.println("Negative cycle detected!");
+                }
                 break;
         }
     }
 
     private static void shortestPathsBetweenAllPairsSubMenu() {
         if (!shortestPathsComputed) {
-            computeShortestPaths();
+            getNewStaff();
             shortestPathsComputed = true;
         }
 
@@ -126,8 +134,6 @@ public class CLI {
 
                 break;
             case 2:
-                int[] bellmanFordCosts = new int[graph.size()];
-                int[] bellmanFordParents = new int[graph.size()];
                 boolean noNegativeCycle = graph.bellmanFord(0, bellmanFordCosts, bellmanFordParents);
                 if (noNegativeCycle) {
                     shortestPathsOperationBetweenAllPairs(bellmanFordCosts, bellmanFordParents);
@@ -136,29 +142,32 @@ public class CLI {
                 }
                 break;
             case 3:
-                System.out.println("Floyd-Warshall algorithm not implemented yet.");
+                boolean noNegativeCycle2 = graph.floydWarshall(floydWarshallCosts, floydWarshallPredecessors);
+                if (noNegativeCycle2) {
+                    shortestPathsOperationBetweenAllPairsFloyd();
+                } else {
+                    System.out.println("Negative cycle detected!");
+                }
                 break;
         }
     }
 
-    private static void computeShortestPaths() {
+    private static void getNewStaff() {
         dijkstraCosts = new int[graph.size()];
         dijkstraParents = new int[graph.size()];
-        graph.dijkstra(0, dijkstraCosts, dijkstraParents);
+        bellmanFordCosts = new int[graph.size()];
+        bellmanFordParents = new int[graph.size()];
+        floydWarshallCosts = new int[graph.size()][graph.size()];
+        floydWarshallPredecessors = new int[graph.size()][graph.size()];
     }
 
     private static void shortestPathsOperation(int source, int[] costs, int[] parents) {
         while (true) {
             System.out.println("\nShortest paths from node " + source + ":");
-            for (int i = 0; i < costs.length; i++) {
-                if (i != source) {
-                    System.out.println("Node " + i + ": Cost=" + costs[i] + ", Path=" + getPath(source, i, parents));
-                }
-            }
-            System.out.println("\n0. Return to main menu");
-            System.out.print("Enter target node (0 to return): ");
+
+            System.out.print("Enter target node (-1 to return to main menu): ");
             int target = scanner.nextInt();
-            if (target == 0) {
+            if (target == -1) {
                 break;
             }
             if (target < 0 || target >= graph.size() || target == source) {
@@ -169,6 +178,66 @@ public class CLI {
             System.out.println("Path from node " + source + " to node " + target + ": " + getPath(source, target, parents));
         }
     }
+
+    private static void shortestPathsOperationFloyd(int source) {
+        while (true) {
+            System.out.print("Enter target node: ");
+            int target = scanner.nextInt();
+            if (source < 0 || source >= graph.size() || target < 0 || target >= graph.size()) {
+                System.out.println("Invalid source or target node!");
+                continue;
+            }
+            System.out.println("Cost of path from node " + source + " to node " + target + ": " + floydWarshallCosts[source][target]);
+
+            int current = target;
+            StringBuilder path = new StringBuilder();
+            while (current != source && current != -1){
+                path.insert(0, " -> "+current);
+                current = floydWarshallPredecessors[source][current];
+
+            }
+            path.insert(0,source);
+            System.out.println("Shortest path from node " + source + " to node " + target + ":");
+            System.out.println(path.toString());
+
+            System.out.print("-1 to return to main menu: ");
+            if (scanner.nextInt() == -1) {
+                break;
+            }
+        }
+    }
+
+    private static void shortestPathsOperationBetweenAllPairsFloyd() {
+        while (true) {
+            System.out.print("\nEnter source node: ");
+            int source = scanner.nextInt();
+            System.out.print("Enter target node: ");
+            int target = scanner.nextInt();
+            if (source < 0 || source >= graph.size() || target < 0 || target >= graph.size()) {
+                System.out.println("Invalid source or target node!");
+                continue;
+            }
+            System.out.println("Cost of path from node " + source + " to node " + target + ": " + floydWarshallCosts[source][target]);
+
+            int current = target;
+            StringBuilder path = new StringBuilder();
+            while (current != source && current != -1){
+                path.insert(0, " -> "+current);
+                current = floydWarshallPredecessors[source][current];
+
+            }
+            path.insert(0,source);
+            path.insert(0,source);
+            System.out.println("Shortest path from node " + source + " to node " + target + ":");
+            System.out.println(path.toString());
+
+            System.out.print("-1 to return to main menu: ");
+            if (scanner.nextInt() == -1) {
+                break;
+            }
+        }
+    }
+
 
     private static void shortestPathsOperationBetweenAllPairs(int[] costs, int[] parents) {
         while (true) {
@@ -182,9 +251,9 @@ public class CLI {
             }
             System.out.println("Cost of path from node " + source + " to node " + target + ": " + costs[target]);
             System.out.println("Path from node " + source + " to node " + target + ": " + getPath(source, target, parents));
-            System.out.println("\n0. Return to main menu");
-            System.out.print("Enter 0 to return: ");
-            if (scanner.nextInt() == 0) {
+
+            System.out.print("Enter -1 to return: ");
+            if (scanner.nextInt() == -1) {
                 break;
             }
         }
@@ -210,16 +279,19 @@ public class CLI {
         System.out.println("2. Floyd-Warshall algorithm");
         int algorithmChoice = getChoice(1, 2);
 
+        if (!shortestPathsComputed) {
+            getNewStaff();
+            shortestPathsComputed = true;
+        }
+
         boolean hasNegativeCycle = false;
 
         switch (algorithmChoice) {
             case 1:
-                int[] bellmanFordCosts = new int[graph.size()];
-                int[] bellmanFordParents = new int[graph.size()];
                 hasNegativeCycle = !graph.bellmanFord(0, bellmanFordCosts, bellmanFordParents);
                 break;
             case 2:
-                System.out.println("Floyd-Warshall algorithm not implemented yet.");
+                hasNegativeCycle = !graph.floydWarshall(floydWarshallCosts, floydWarshallPredecessors);
                 break;
         }
 
