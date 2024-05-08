@@ -128,7 +128,10 @@ public class Graph {
             int u = edge[0];
             int v = edge[1];
             int weight = edge[2];
-            costsMatrix[u][v] = Integer.min(costsMatrix[u][v], weight);
+            if( weight < costsMatrix[u][v] ){
+                costsMatrix[u][v] = Integer.min(costsMatrix[u][v], weight);
+                predecessorsMatrix[u][v] = u;
+            }
         }
 
         for (int k = 0; k < n; k++) {

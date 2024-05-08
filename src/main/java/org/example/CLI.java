@@ -109,34 +109,24 @@ public class CLI {
         System.out.println("3. Floyd-Warshall algorithm");
         int algorithmChoice = getChoice(1, 3);
 
+        int[][] costs = new int[graph.size()][graph.size()];
+        int[][] parents = new int[graph.size()][graph.size()];
+
         switch (algorithmChoice) {
             case 1:
-                int[][] costs = new int[graph.size()][graph.size()];
-                int[][] parents = new int[graph.size()][graph.size()];
-
                 for (int source = 0; source < graph.size(); source++) {
                     graph.dijkstra(source, costs[source], parents[source]);
                 }
-                System.out.print("\nEnter source node: ");
-                int source = scanner.nextInt();
-                System.out.print("Enter target node: ");
-                int target = scanner.nextInt();
-
-                if (source < 0 || source >= graph.size() || target < 0 || target >= graph.size()) {
-                    System.out.println("Invalid source or target node!");
-                    return;
-                }
-
-                System.out.println("Cost of path from node " + source + " to node " + target + ": " + costs[source][target]);
-                System.out.println("Path from node " + source + " to node " + target + ": " + getPath(source, target, dijkstraParents));
-                System.out.println("\n0. Return to main menu");
-                System.out.print("Enter 0 to return: ");
-
+                shortestPathsOperationBetweenAllPairs(costs, parents);
                 break;
             case 2:
-                boolean noNegativeCycle = graph.bellmanFord(0, bellmanFordCosts, bellmanFordParents);
+                boolean noNegativeCycle = true;
+                for (int source = 0; source < graph.size(); source++) {
+                     noNegativeCycle = noNegativeCycle &&  graph.bellmanFord(source, costs[source],parents[source]);
+
+                }
                 if (noNegativeCycle) {
-                    shortestPathsOperationBetweenAllPairs(bellmanFordCosts, bellmanFordParents);
+                    shortestPathsOperationBetweenAllPairs(costs, parents);
                 } else {
                     System.out.println("Negative cycle detected!");
                 }
@@ -191,10 +181,14 @@ public class CLI {
 
             int current = target;
             StringBuilder path = new StringBuilder();
-            while (current != source && current != -1){
+            while (current != source){
                 path.insert(0, " -> "+current);
                 current = floydWarshallPredecessors[source][current];
-
+                if( current == -1 ){
+//                    System.out.println("No such path.");
+//                    return;
+                    break;
+                }
             }
             path.insert(0,source);
             System.out.println("Shortest path from node " + source + " to node " + target + ":");
@@ -221,12 +215,14 @@ public class CLI {
 
             int current = target;
             StringBuilder path = new StringBuilder();
-            while (current != source && current != -1){
+            while (current != source){
                 path.insert(0, " -> "+current);
                 current = floydWarshallPredecessors[source][current];
-
+                if( current == -1 ){
+                    System.out.println("No such path.");
+                    return;
+                }
             }
-            path.insert(0,source);
             path.insert(0,source);
             System.out.println("Shortest path from node " + source + " to node " + target + ":");
             System.out.println(path.toString());
@@ -239,7 +235,7 @@ public class CLI {
     }
 
 
-    private static void shortestPathsOperationBetweenAllPairs(int[] costs, int[] parents) {
+    private static void shortestPathsOperationBetweenAllPairs(int[][] costs, int[][] parents) {
         while (true) {
             System.out.print("\nEnter source node: ");
             int source = scanner.nextInt();
@@ -249,8 +245,8 @@ public class CLI {
                 System.out.println("Invalid source or target node!");
                 continue;
             }
-            System.out.println("Cost of path from node " + source + " to node " + target + ": " + costs[target]);
-            System.out.println("Path from node " + source + " to node " + target + ": " + getPath(source, target, parents));
+            System.out.println("Cost of path from node " + source + " to node " + target + ": " + costs[source][target]);
+            System.out.println("Path from node " + source + " to node " + target + ": " + getPath(source, target, parents[source]));
 
             System.out.print("Enter -1 to return: ");
             if (scanner.nextInt() == -1) {
