@@ -43,41 +43,44 @@ public class Graph {
     }
 
     public void dijkstra(int source, int[] costs, int[] parents) {
-        Arrays.fill(costs, Integer.MAX_VALUE);
-        Arrays.fill(parents, -1);
-        costs[source] = 0;
+    int n = graph.size();
+    boolean[] visited = new boolean[n];
+    Arrays.fill(costs, Integer.MAX_VALUE);
+    Arrays.fill(parents, -1);
+    costs[source] = 0;
 
-        boolean[] visited = new boolean[V];
+    for (int i = 0; i < n - 1; i++) {
+        int minCost = Integer.MAX_VALUE;
+        int minNode = -1;
 
-        for (int i = 0; i < V - 1; i++) {
-            int minCost = Integer.MAX_VALUE;
-            int minNode = -1;
-
-            for (int[] edge : edges) {
-                int u = edge[0];
-                int v = edge[1];
-                int weight = edge[2];
-
-                if (!visited[u] && costs[u] < minCost) {
-                    minCost = costs[u];
-                    minNode = u;
-                }
+        // Find the unvisited node with the minimum cost
+        for (int j = 0; j < n; j++) {
+            if (!visited[j] && costs[j] < minCost) {
+                minCost = costs[j];
+                minNode = j;
             }
+        }
 
-            visited[minNode] = true;
+        if (minNode == -1) {
+            break; // No more reachable nodes
+        }
 
-            for (int[] edge : edges) {
-                int u = edge[0];
-                int v = edge[1];
+        visited[minNode] = true;
+
+        // Update the costs of neighbors of minNode
+        for (int[] edge : graph) {
+            if (edge[0] == minNode) {
+                int neighbor = edge[1];
                 int weight = edge[2];
-
-                if (!visited[v] && u == minNode && costs[u] + weight < costs[v]) {
-                    costs[v] = costs[u] + weight;
-                    parents[v] = u;
+                if (!visited[neighbor] && costs[minNode] + weight < costs[neighbor]) {
+                    costs[neighbor] = costs[minNode] + weight;
+                    parents[neighbor] = minNode;
                 }
             }
         }
     }
+}
+
 
     public boolean bellmanFord(int source, int[] costs, int[] parents) {
         Arrays.fill(costs, Integer.MAX_VALUE);
