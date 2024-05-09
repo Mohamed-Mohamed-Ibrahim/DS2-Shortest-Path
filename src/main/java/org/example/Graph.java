@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.PriorityQueue;
 import java.util.Scanner;
 
 public class Graph {
@@ -43,42 +44,27 @@ public class Graph {
     }
 
     public void dijkstra(int source, int[] costs, int[] parents) {
-    int n = graph.size();
-    boolean[] visited = new boolean[n];
-    Arrays.fill(costs, Integer.MAX_VALUE);
-    Arrays.fill(parents, -1);
-    costs[source] = 0;
+        Arrays.fill(costs, Integer.MAX_VALUE);
+        Arrays.fill(parents, -1);
 
-    for (int i = 0; i < n - 1; i++) {
-        int minCost = Integer.MAX_VALUE;
-        int minNode = -1;
+        PriorityQueue<Integer> pq = new PriorityQueue<>((a, b) -> costs[a] - costs[b]);
+        costs[source] = 0;
+        pq.offer(source);
 
-        // Find the unvisited node with the minimum cost
-        for (int j = 0; j < n; j++) {
-            if (!visited[j] && costs[j] < minCost) {
-                minCost = costs[j];
-                minNode = j;
-            }
-        }
+        while (!pq.isEmpty()) {
+            int u = pq.poll();
 
-        if (minNode == -1) {
-            break; // No more reachable nodes
-        }
-
-        visited[minNode] = true;
-
-        // Update the costs of neighbors of minNode
-        for (int[] edge : graph) {
-            if (edge[0] == minNode) {
-                int neighbor = edge[1];
+            for (int[] edge : edges) {
+                int v = edge[1];
                 int weight = edge[2];
-                if (!visited[neighbor] && costs[minNode] + weight < costs[neighbor]) {
-                    costs[neighbor] = costs[minNode] + weight;
-                    parents[neighbor] = minNode;
+
+                if (edge[0] == u && costs[u] + weight < costs[v]) {
+                    costs[v] = costs[u] + weight;
+                    parents[v] = u;
+                    pq.offer(v);
                 }
             }
         }
-    }
 }
 
 

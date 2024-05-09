@@ -36,7 +36,8 @@ public class RandomGraphGenerator {
             while (source == target) {
                 target = random.nextInt(numVertices);
             }
-            int weight = random.nextInt(2 * maxWeight + 1) - maxWeight; // Generate random weight [-maxWeight, maxWeight]
+//            int weight = random.nextInt(2 * maxWeight + 1) - maxWeight; // Generate random weight [-maxWeight, maxWeight]
+            int weight = random.nextInt(maxWeight + 1); // Generate random weight [-maxWeight, maxWeight]
             graphContent.append(source).append(" ").append(target).append(" ").append(weight).append("\n");
         }
 
@@ -91,7 +92,7 @@ public class RandomGraphGenerator {
         int[][] floydWarshallPredecessors = new int[graph.size()][graph.size()];
         boolean noNegativeCycleFloyd = graph.floydWarshall(floydWarshallFordCosts, floydWarshallPredecessors);
         if (noNegativeCycleFloyd) {
-            printPaths(floydWarshallFordCosts, floydWarshallPredecessors);
+            printShortestPaths(0, floydWarshallFordCosts[0], floydWarshallPredecessors[0]);
         } else {
             System.out.println("Negative cycle detected!");
         }
